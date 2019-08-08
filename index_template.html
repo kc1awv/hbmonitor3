@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script type="text/javascript">
+         var sock = null;
+         var ellog = null;
+         
+         window.onload = function() {
+            var wsuri;
+            
+            ellog = document.getElementById('log');
+            hblink_table = document.getElementById('hblink');
+            confbridge_table = document.getElementById('bridge');
+            
+            wsuri = "ws://" + window.location.hostname + ":9000";
+
+            
+            if ("WebSocket" in window) {
+               sock = new WebSocket(wsuri);
+            } else if ("MozWebSocket" in window) {
+               sock = new MozWebSocket(wsuri);
+            } else {
+               log("Browser does not support WebSocket!");
+            }
+            
+            if (sock) {
+               sock.onopen = function() {
+                  log("Connected to " + wsuri);
+               }
+               sock.onclose = function(e) {
+                  log("Connection closed (wasClean = " + e.wasClean + ", code = " + e.code + ", reason = '" + e.reason + "')");
+                  hblink_table.innerHTML = "";
+                  confbridge_table.innerHTML = "";
+                  sock = null;
+               }
+               sock.onmessage = function(e) {
+                   var opcode = e.data.slice(0,1);
+                   var message = e.data.slice(1);
+                   if (opcode == "d") {
+                       hblink(message);
+                   } else if (opcode == "b") {
+                       confbridge(message);
+                   } else if (opcode == "l") {
+                       log(message);
+                   } else if (opcode == "q") {
+                       log(message);
+                       hblink_table.innerHTML = "";
+                       confbridge_table.innerHTML = "";
+                   } else {
+                       log("Unknown Message Received: " + message);
+                   }
+               }
+            }
+         };
+         
+         function hblink(_msg) {
+             hblink_table.innerHTML = _msg;
+         };
+         
+         function confbridge(_msg) {
+             confbridge_table.innerHTML = _msg;
+         };
+         
+         function log(_msg) {
+            ellog.innerHTML += _msg + '\n';
+            ellog.scrollTop = ellog.scrollHeight;
+         };
+         
+      </script>
+   </head>
+    <body style="font: 10pt arial, sans-serif">
+         <h1><center>HBlink Monitoring Server</center></h1>
+         <h3><center><<<system_name>>></center></h3>
+         <p><center><<<timeout_warning>>></center></p>
+         <hr>
+         <noscript>You must enable JavaScript</noscript>
+         <style>table, td, th {border: .5px solid black; padding: 2px; border-collapse: collapse; text-align:center;}</style>
+         <p id="hblink"></p>
+         <p id="bridge"></p>
+         <hr>
+         <h3>Call Log Window:</h3>
+         <pre id="log" style="height: 10em; overflow-y: scroll; background-color: #ccc;"></pre>
+
+    <hr>
+    <center>
+    Copyright (c) 2016, 2017, 2018, 2019<br>The Regents of the K0USY Group. All rights reserved.
+    <!-- THIS COPYRIGHT NOTICE MUST BE DISPLAYED AS A CONDITION OF THE LICENCE GRANT FOR THIS SOFTWARE. ALL DERIVATEIVES WORKS MUST CARRY THIS NOTICE -->
+    </body>
+</html>

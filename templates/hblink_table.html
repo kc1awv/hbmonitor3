@@ -1,0 +1,90 @@
+<h3>HBlink Status Tables:</h3>
+<table style="table-layout:fixed;width:100%; font: 10pt arial, sans-serif">
+    <tr style="font: 10pt arial, sans-serif; background-color:#666666; color:white">
+        <th style='width: 150px;'>Homebrew Protocol<br>Master Systems</th>
+        <th style='width: 250px;'>ID/Callsign/Location<br>IP:Port/Time Connected</th>
+        <th style='width: 100px;'>Frequency</th>
+        <th style='width: 70px;'>CC<br>LinkedTS</th>
+        <th style='width: 45px;'>Slot</th>
+        <th style='width: 20%;'>Call<br>Type</th>
+        <th style='width: 60%;'>Source<br>Subscriber</th>
+        <th style='width: 20%;'>Destination</th>
+    </tr>
+
+    {% for _master in _table['MASTERS'] %}    
+
+    <tr>
+        <td style="font-weight:bold" rowspan="{{ (_table['MASTERS'][_master]['PEERS']|length * 2) +1 }}"> {{_master}}<br><div style="font: 8pt arial, sans-serif">{{_table['MASTERS'][_master]['REPEAT']}}</div></td>
+    </tr>
+    {% for _client, _cdata in _table['MASTERS'][_master]['PEERS'].items() %}
+    <tr>
+        <td rowspan="2">{{ _client }}, {{ _cdata['CALLSIGN'] }}, {{ _cdata['LOCATION'] }}<br><div style="font: 8pt arial, sans-serif">{{ _cdata['IP'] }}:{{ _cdata['PORT'] }} / {{ _cdata['CONNECTED'] }}</div></td>
+        <td rowspan="2">{{ _cdata['RX_FREQ'] }}<br>{{ _cdata['TX_FREQ'] }}</td>
+        <td rowspan="2">{{ _cdata['COLORCODE'] }}<br>{{ _cdata['SLOTS'] }}</td>
+
+        <td style="background-color:#{{ _cdata[1]['BGCOLOR'] }}; color:#{{ _cdata[1]['COLOR'] }}">TS1</td>
+        <td style="background-color:#{{ _cdata[1]['BGCOLOR'] }}; color:#{{ _cdata[1]['COLOR'] }}">{{ _cdata[1]['TYPE'] }}</td>
+        <td style="background-color:#{{ _cdata[1]['BGCOLOR'] }}; color:#{{ _cdata[1]['COLOR'] }}">{{ _cdata[1]['SUB'] }}</td>
+        <td style="background-color:#{{ _cdata[1]['BGCOLOR'] }}; color:#{{ _cdata[1]['COLOR'] }}">{{ _cdata[1]['DEST'] }}</td>
+        <tr>
+        <td style="background-color:#{{ _cdata[2]['BGCOLOR'] }}; color:#{{ _cdata[2]['COLOR'] }}">TS2</td>
+        <td style="background-color:#{{ _cdata[2]['BGCOLOR'] }}; color:#{{ _cdata[2]['COLOR'] }}">{{ _cdata[2]['TYPE'] }}</td>
+        <td style="background-color:#{{ _cdata[2]['BGCOLOR'] }}; color:#{{ _cdata[2]['COLOR'] }}">{{ _cdata[2]['SUB'] }}</td>
+        <td style="background-color:#{{ _cdata[2]['BGCOLOR'] }}; color:#{{ _cdata[2]['COLOR'] }}">{{ _cdata[2]['DEST'] }}</td>
+        </tr>
+
+    </tr>    
+    {% endfor %}
+{% endfor %}
+</table>
+<br>
+<table style="table-layout:fixed;width:100%; font: 10pt arial, sans-serif">
+    <tr style="font: 10pt arial, sans-serif; background-color:#666666; color:white">
+        <th style='width: 150px;'>Homebrew Protocol<br>Peer Systems</th>
+        <th style='width: 250px;'>ID/Callsign/Location<br>Master IP:Port</th>
+        <th style='width: 100px;'>Connected<br>TX/RX/Lost</th>
+        <th style='width: 70px;'>LinkedTS</th>
+        <th style='width: 45px;'>Slot</th>
+        <th style='width: 20%;'>Call<br>Type</th>
+        <th style='width: 60%;'>Source<br>Subscriber</th>
+        <th style='width: 20%;'>Destination</th>
+    </tr>
+    
+    {% for _peer, _pdata  in _table['PEERS'].items() %}
+    <tr>
+        <td style="font-weight:bold" rowspan="2"> {{ _peer}}<br><span style="font-weight:normal; font: 7pt arial, sans-serif;">Mode: {{ _table['PEERS'][_peer]['MODE'] }}</span></td>
+        <td rowspan="2">{{ _table['PEERS'][_peer]['RADIO_ID'] }}, {{_table['PEERS'][_peer]['CALLSIGN']}}, {{_table['PEERS'][_peer]['LOCATION']}}<br><div style="font: 8pt arial, sans-serif">Master: {{ _table['PEERS'][_peer]['MASTER_IP'] }}:{{ _table['PEERS'][_peer]['MASTER_PORT'] }}</div></td>
+        <td rowspan="2"; style={{ 'background-color:#00ff00' if _table['PEERS'][_peer]['STATS']['CONNECTION'] == 'YES' else ';background-color:#ff0000' }}>{{ _table['PEERS'][_peer]['STATS']['CONNECTED'] }}<br><div style="font: 8pt arial, sans-serif">{{ _table['PEERS'][_peer]['STATS']['PINGS_SENT'] }} / {{ _table['PEERS'][_peer]['STATS']['PINGS_ACKD'] }} / {{ _table['PEERS'][_peer]['STATS']['PINGS_SENT'] - _table['PEERS'][_peer]['STATS']['PINGS_ACKD'] }}</div></td>
+        <td rowspan="2"> {{ _table['PEERS'][_peer]['SLOTS'] }}</td>
+        
+        <td style="background-color:#{{ _pdata[1]['BGCOLOR'] }}; color:#{{ _pdata[1]['COLOR'] }}">TS1</td>
+        <td style="background-color:#{{ _pdata[1]['BGCOLOR'] }}; color:#{{ _pdata[1]['COLOR'] }}">{{ _pdata[1]['TYPE'] }}</td>
+        <td style="background-color:#{{ _pdata[1]['BGCOLOR'] }}; color:#{{ _pdata[1]['COLOR'] }}">{{ _pdata[1]['SUB'] }}</td>
+        <td style="background-color:#{{ _pdata[1]['BGCOLOR'] }}; color:#{{ _pdata[1]['COLOR'] }}">{{ _pdata[1]['DEST'] }}</td>
+        <tr>
+        <td style="background-color:#{{ _pdata[2]['BGCOLOR'] }}; color:#{{ _pdata[2]['COLOR'] }}">TS2</td>
+        <td style="background-color:#{{ _pdata[2]['BGCOLOR'] }}; color:#{{ _pdata[2]['COLOR'] }}">{{ _pdata[2]['TYPE'] }}</td>
+        <td style="background-color:#{{ _pdata[2]['BGCOLOR'] }}; color:#{{ _pdata[2]['COLOR'] }}">{{ _pdata[2]['SUB'] }}</td>
+        <td style="background-color:#{{ _pdata[2]['BGCOLOR'] }}; color:#{{ _pdata[2]['COLOR'] }}">{{ _pdata[2]['DEST'] }}</td>
+        </tr>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<table style="table-layout:fixed;width:100%; font: 10pt arial, sans-serif">
+    <tr style="width:100%; font: 10pt arial, sans-serif; background-color:#666666; color:white">
+        <th style='width: 150px;'>OpenBridge Systems</th>
+        <th style='width: 250px;'>Network ID<br>Target IP:Port</th>
+        <th style='width: 100%;'>Active Calls</th>
+    </tr>
+
+    {% for _openbridge in _table['OPENBRIDGES'] %}
+
+    <tr>
+        <td style="font-weight:bold"> {{ _openbridge}} </td>
+        <td>{{ _table['OPENBRIDGES'][_openbridge]['NETWORK_ID'] }}<br><div style="font: 8pt arial, sans-serif">{{ _table['OPENBRIDGES'][_openbridge]['TARGET_IP'] }}:{{ _table['OPENBRIDGES'][_openbridge]['TARGET_PORT'] }}</div></td>
+        <td>{% for entry in _table['OPENBRIDGES'][_openbridge]['STREAMS']  %}({{ _table['OPENBRIDGES'][_openbridge]['STREAMS'][entry][0] }} | {{ _table['OPENBRIDGES'][_openbridge]['STREAMS'][entry][1] }} >> {{ _table['OPENBRIDGES'][_openbridge]['STREAMS'][entry][2] }}) {% endfor %}</td>
+
+    </tr>
+    {% endfor %}
+</table>
