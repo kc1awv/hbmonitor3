@@ -140,19 +140,19 @@ def add_hb_peer(_peer_conf, _ctable_loc, _peer):
     _ctable_peer = _ctable_loc[int_id(_peer)]
 
     # if the Frequency is 000.xxx assume it's not an RF peer, otherwise format the text fields
-    if _peer_conf['TX_FREQ'][:3] == '000' or _peer_conf['RX_FREQ'][:3] == '000':
+    if _peer_conf['TX_FREQ'][:3] == b'000' or _peer_conf['RX_FREQ'][:3] == b'000':
         _ctable_peer['TX_FREQ'] = 'N/A'
         _ctable_peer['RX_FREQ'] = ''
     else:
         _ctable_peer['TX_FREQ'] = 'TX: ' + _peer_conf['TX_FREQ'][:3].decode('utf-8') + '.' + _peer_conf['TX_FREQ'][3:7].decode('utf-8')
         _ctable_peer['RX_FREQ'] = 'RX: ' + _peer_conf['RX_FREQ'][:3].decode('utf-8') + '.' + _peer_conf['RX_FREQ'][3:7].decode('utf-8')
 
-    # timeslots are kinda complicated too. 0 = none, 1 or 2 mean that one slot, 3 is both, and anythign else it considered DMO
-    if (_peer_conf['SLOTS'] == '0'):
+    # timeslots are kinda complicated too. 0 = none, 1 or 2 mean that one slot, 3 is both, and anything else it considered DMO
+    if (_peer_conf['SLOTS'] == b'0'):
         _ctable_peer['SLOTS'] = 'NONE'
-    elif (_peer_conf['SLOTS'] == '1' or _peer_conf['SLOTS'] == '2'):
+    elif (_peer_conf['SLOTS'] == b'1' or _peer_conf['SLOTS'] == b'2'):
         _ctable_peer['SLOTS'] = _peer_conf['SLOTS']
-    elif (_peer_conf['SLOTS'] == '3'):
+    elif (_peer_conf['SLOTS'] == b'3'):
         _ctable_peer['SLOTS'] = 'BOTH'
     else:
         _ctable_peer['SLOTS'] = 'DMO'
@@ -218,11 +218,11 @@ def build_hblink_table(_config, _stats_table):
                     _stats_table['PEERS'][_hbp]['STATS']['CONNECTED'] = since(_hbp_data['STATS']['CONNECTED'])
                     _stats_table['PEERS'][_hbp]['STATS']['PINGS_SENT'] = _hbp_data['STATS']['PINGS_SENT']
                     _stats_table['PEERS'][_hbp]['STATS']['PINGS_ACKD'] = _hbp_data['STATS']['PINGS_ACKD']
-                if _hbp_data['SLOTS'] == 0:
+                if _hbp_data['SLOTS'] == b'0':
                     _stats_table['PEERS'][_hbp]['SLOTS'] = 'NONE'
-                elif _hbp_data['SLOTS']  == '1' or _hbp_data['SLOTS'] == '2':
-                    _stats_table['PEERS'][_hbp]['SLOTS'] = _hbp_data['SLOTS']
-                elif _hbp_data['SLOTS']  == '3':
+                elif _hbp_data['SLOTS']  == b'1' or _hbp_data['SLOTS'] == b'2':
+                    _stats_table['PEERS'][_hbp]['SLOTS'] = _hbp_data['SLOTS'].decode('utf-8')
+                elif _hbp_data['SLOTS']  == b'3':
                     _stats_table['PEERS'][_hbp]['SLOTS'] = 'BOTH'
                 else:
                     _stats_table['PEERS'][_hbp]['SLOTS'] = 'DMO'
